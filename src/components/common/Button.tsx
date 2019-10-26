@@ -1,11 +1,16 @@
 import React from 'react'
-import Button from '@material-ui/core/Button'
+import MuButton from '@material-ui/core/Button'
 import './Button.scss'
 
-const ColorButton = () => (
-  <Button className="Button-orange" variant="contained">
-    Click Me
-  </Button>
+type ButtonProps = {
+  text: string,
+  color?: string
+}
+
+const Button = ({ text, color = 'orange' }: ButtonProps) => (
+  <MuButton className={`Button-${color}`} variant="contained">
+    { text }
+  </MuButton>
 );
 
-export default ColorButton;
+export default Button

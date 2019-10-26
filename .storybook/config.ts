@@ -1,11 +1,16 @@
 import { configure, addParameters } from "@storybook/react"
-import { themes } from '@storybook/theming'
+import { themes, create } from '@storybook/theming'
 
 const req = require.context("../src", true, /\.stories\.tsx$/)
 
+const theme = create({
+  base: 'light',
+  appContentBg: '#f5f5f5'
+});
+
 addParameters({
   options: {
-    theme: themes.light
+    theme
   }
 })
 
