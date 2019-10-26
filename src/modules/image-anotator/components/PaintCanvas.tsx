@@ -1,17 +1,19 @@
 import React, { useState, useRef } from 'react'
-import './Canvas.scss'
+import './PaintCanvas.scss'
 
-type CanvasProps = {
-  imagePath: string
+type PaintCanvasProps = {
+  imagePath: string,
+  radius?: number
 }
 
-const Canvas = ({ imagePath }: CanvasProps) => {
+const PaintCanvas = ({ imagePath, radius = 5 }: PaintCanvasProps) => {
 
+  const [ mousePos, setMousePos ] = useState({ x: 0, y: 0 })
   const [ imageDims, setImageDims ] = useState({ width: 0, height: 0 })
   const [ isMouseDown, setMouseDown ] = useState(false)
   const canvasRef = useRef(null)
   
-  return <div className="Canvas">
+  return <div className="PaintCanvas">
     <img
       className="image"
       src={imagePath}
@@ -29,14 +31,27 @@ const Canvas = ({ imagePath }: CanvasProps) => {
       onMouseDown={() => setMouseDown(true)}
       onMouseUp={() => setMouseDown(false)}
       onMouseMove={({ nativeEvent: event }) => {
+        const { offsetX, offsetY } = event
+        setMousePos({ x: offsetX, y: offsetY })
         if(!isMouseDown) return
         const canvas: any = canvasRef.current
         const ctx = canvas.getContext('2d')
-        ctx.fillRect(event.offsetX, event.offsetY, 10, 10)
+        ctx.beginPath()
+        ctx.arc(offsetX, offsetY, radius, 0, 1.5 * Math.PI)
+        ctx.fill()
+      }}
+    />
+    <div
+      className="cursor"
+      style={{
+        left: mousePos.x - radius,
+        top: mousePos.y - radius,
+        width: radius * 2,
+        height: radius * 2
       }}
     />
   </div>
   
 };
 
-export default Canvas
+export default PaintCanvas
