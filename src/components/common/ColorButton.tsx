@@ -1,9 +1,10 @@
-import React from "react"
-export interface IProps {
-    color: string
-    onClick?: (color: string) => void
-}
-export default (props: IProps) => {
-    const {color, onClick} = props;
-    return <button style={{color}} onClick={() => onClick && onClick(color)}>Color Button</button>
-}
+import React from 'react';
+import Button from '@material-ui/core/Button';
+
+const ColorButton = () => (
+  <Button variant="contained" color="primary">
+    Hello World
+  </Button>
+);
+
+export default ColorButton;
