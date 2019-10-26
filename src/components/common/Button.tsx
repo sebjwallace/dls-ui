@@ -4,11 +4,11 @@ import './Button.scss'
 
 type ButtonProps = {
   text: string,
-  color?: string
+  type?: string
 }
 
-const Button = ({ text, color = 'orange' }: ButtonProps) => (
-  <MuButton className={`Button-${color}`} variant="contained">
+const Button = ({ text, type = 'default' }: ButtonProps) => (
+  <MuButton className={`Button-${type}`} variant="contained">
     { text }
   </MuButton>
 );

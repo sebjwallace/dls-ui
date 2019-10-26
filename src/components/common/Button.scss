@@ -1,22 +1,114 @@
 $box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset;
 
-@mixin background($darken) {
-  background: linear-gradient(0deg, darken(#ff763e,$darken) 30%, darken(#ff9d53,$darken) 90%);
-}
+// Base
 
-.Button-orange.MuiButton-root {
-  @include background(0);
+.Button-base {
   height: auto;
-  border: 1px solid #d69277;
   box-shadow: $box-shadow;
   font-weight: 500;
   text-transform: unset;
   border-radius: 3px;
-  color: white;
   padding: 0 20px;
+  color: white;
 
   &:hover {
-    @include background(4%);
     box-shadow: $box-shadow;
+  }
+}
+
+// Default
+
+@mixin defaultBackground($darken) {
+  background: linear-gradient(0deg, darken(#dadada,$darken) 30%, darken(#efefef,$darken) 90%);
+}
+
+.Button-default.MuiButton-root {
+  @extend .Button-base;
+  @include defaultBackground(0);
+  border: 1px solid #d3d3d3;
+  color: #4e4d4d;
+
+  &:hover {
+    @include defaultBackground(4%);
+  }
+}
+
+// Primary
+
+@mixin backgroundPrimary($darken) {
+  background: linear-gradient(0deg, darken(#ff763e,$darken) 30%, darken(#ff9d53,$darken) 90%);
+}
+
+.Button-primary.MuiButton-root {
+  @extend .Button-base;
+  @include backgroundPrimary(0);
+  border: 1px solid #d69277;
+
+  &:hover {
+    @include backgroundPrimary(4%);
+  }
+}
+
+// Success
+
+@mixin backgroundSuccess($darken) {
+  background: linear-gradient(0deg, darken(#5eb743,$darken) 30%, darken(#93d081,$darken) 90%);
+}
+
+.Button-success.MuiButton-root {
+  @extend .Button-base;
+  @include backgroundSuccess(0);
+  border: 1px solid #4ea87c;
+
+  &:hover {
+    @include backgroundSuccess(4%);
+  }
+}
+
+// Info
+
+@mixin backgroundInfo($darken) {
+  background: linear-gradient(0deg, darken(#248fbb,$darken) 30%, darken(#61acd3,$darken) 90%);
+}
+
+.Button-info.MuiButton-root {
+  @extend .Button-base;
+  @include backgroundInfo(0);
+  border: 1px solid #4e96a8;
+
+  &:hover {
+    @include backgroundInfo(4%);
+  }
+}
+
+// Warning
+
+@mixin backgroundWarning($darken) {
+  background: linear-gradient(0deg, darken(#e39d14,$darken) 30%, darken(#edab41,$darken) 90%);
+}
+
+.Button-warning.MuiButton-root {
+  @extend .Button-base;
+  @include backgroundWarning(0);
+  border: 1px solid #c78f20;
+
+  &:hover {
+    @include backgroundWarning(4%);
+  }
+}
+
+// Danger
+
+@mixin backgroundDanger($darken) {
+  background: linear-gradient(0deg, darken(#e31414,$darken) 30%, darken(#ff5c5c,$darken) 90%);
+}
+
+.Button-danger.MuiButton-root {
+  @extend .Button-base;
+  @include backgroundDanger(0);
+  border: 1px solid #c72020;
+
+  &:hover {
+    @include backgroundDanger(4%);
   }
 }
