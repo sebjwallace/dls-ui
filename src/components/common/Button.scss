@@ -1,0 +1,22 @@
+$box-shadow: 0 1px 0 rgba(255,255,255,0.4) inset;
+
+@mixin background($darken) {
+  background: linear-gradient(0deg, darken(#ff763e,$darken) 30%, darken(#ff9d53,$darken) 90%);
+}
+
+.Button-orange.MuiButton-root {
+  @include background(0);
+  height: auto;
+  border: 1px solid #d69277;
+  box-shadow: $box-shadow;
+  font-weight: 500;
+  text-transform: unset;
+  border-radius: 3px;
+  color: white;
+  padding: 0 20px;
+
+  &:hover {
+    @include background(4%);
+    box-shadow: $box-shadow;
+  }
+}
