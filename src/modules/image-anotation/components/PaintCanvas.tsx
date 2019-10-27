@@ -31,14 +31,18 @@ const PaintCanvas = ({ imagePath, radius = 5 }: PaintCanvasProps) => {
       onMouseDown={() => setMouseDown(true)}
       onMouseUp={() => setMouseDown(false)}
       onMouseMove={({ nativeEvent: event }) => {
+        const { x: prevX, y: prevY } = mousePos;
         const { offsetX, offsetY } = event
         setMousePos({ x: offsetX, y: offsetY })
         if(!isMouseDown) return
         const canvas: any = canvasRef.current
         const ctx = canvas.getContext('2d')
+        ctx.lineWidth = radius * 2
+        ctx.lineCap = 'round'
         ctx.beginPath()
-        ctx.arc(offsetX, offsetY, radius, 0, 1.5 * Math.PI)
-        ctx.fill()
+        ctx.moveTo(prevX, prevY)
+        ctx.lineTo(offsetX, offsetY)
+        ctx.stroke()
       }}
     />
     <div
