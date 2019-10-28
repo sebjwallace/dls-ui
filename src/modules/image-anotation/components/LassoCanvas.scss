@@ -1,0 +1,18 @@
+.LassoCanvas {
+
+  position: relative;
+
+  .canvas, .image, .cursor {
+    position: absolute;
+  }
+
+  .cursor {
+    border: 1px solid red;
+    border-radius: 50%;
+  }
+
+  .cursor, .image {
+    pointer-events: none;
+  }
+
+}
