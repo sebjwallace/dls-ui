@@ -1,9 +1,25 @@
+$red: red;
+
 .BoxCanvas {
 
   position: relative;
 
-  .canvas, .image {
+  .canvas, .image, .box {
     position: absolute;
+  }
+
+  .cursor {
+    position: absolute;
+    height: 10px;
+    width: 10px;
+    background: $red;
+    border: 1px solid $red;
+    border-radius: 50%;
+  }
+
+  .box {
+    background: $red;
+    opacity: 0.1;
   }
 
 }
