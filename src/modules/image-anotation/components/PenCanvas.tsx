@@ -12,12 +12,21 @@ class PenCanvas extends React.Component<PenCanvasProps> {
   private $image: any
 
   public state = {
-    point: {
-      start: { x: 50,    y: 20  },
-      cp1: { x: 230,   y: 30  },
-      cp2: { x: 150,   y: 80  },
-      end: { x: 250,   y: 100 }
-    },
+    points: [
+      {
+        start: { x: 50,    y: 20  },
+        cp1: { x: 230,   y: 30  },
+        cp2: { x: 150,   y: 80  },
+        end: { x: 250,   y: 100 }
+      },
+      {
+        start: { x: 250,   y: 100  },
+        cp1: { x: 270,   y: 150  },
+        cp2: { x: 380,   y: 340  },
+        end: { x: 400,   y: 400 }
+      }
+    ],
+    selectedPoint: 1,
     isMouseDown: false
   }
 
@@ -34,12 +43,14 @@ class PenCanvas extends React.Component<PenCanvasProps> {
   renderCanvas = () => {
     const canvas: any = this.$canvas
     const ctx = canvas.getContext('2d')
-    const { start, cp1, cp2, end } = this.state.point
     ctx.clearRect(0,0,canvas.width,canvas.height)
-    ctx.beginPath()
-    ctx.moveTo(start.x, start.y)
-    ctx.bezierCurveTo(cp2.x, cp2.y, cp1.x, cp1.y, end.x, end.y)
-    ctx.stroke()
+    const { points } = this.state
+    points.forEach(({ start, cp1, cp2, end }) => {
+      ctx.beginPath()
+      ctx.moveTo(start.x, start.y)
+      ctx.bezierCurveTo(cp2.x, cp2.y, cp1.x, cp1.y, end.x, end.y)
+      ctx.stroke()
+    })
   }
 
   onMouseDown = ({ nativeEvent: event }: { nativeEvent: MouseEvent }) => {
@@ -48,7 +59,11 @@ class PenCanvas extends React.Component<PenCanvasProps> {
 
   onMouseMove = (event : any) => {
     if(this.state.isMouseDown){
-      this.setState(this.drag(event))
+      const point = this.state.points[this.state.selectedPoint]
+      this.state.points[this.state.selectedPoint] = this.drag(event, point)
+      this.setState({
+        points: this.state.points
+      })
     }
   }
 
@@ -63,43 +78,35 @@ class PenCanvas extends React.Component<PenCanvasProps> {
 
   drag: any = () => {}
 
-  dragStart = ({ movementX, movementY } : any) => ({
-    point: {
-      ...this.state.point,
-      start: {
-        x: this.state.point.start.x + movementX,
-        y: this.state.point.start.y + movementY
-      }
+  dragStart = ({ movementX, movementY } : any, point: any) => ({
+    ...point,
+    start: {
+      x: point.start.x + movementX,
+      y: point.start.y + movementY
     }
   })
 
-  dragControl1 = ({ movementX, movementY } : any) => ({
-    point: {
-      ...this.state.point,
-      cp1: {
-        x: this.state.point.cp1.x + movementX,
-        y: this.state.point.cp1.y + movementY
-      }
+  dragControl1 = ({ movementX, movementY } : any, point: any) => ({
+    ...point,
+    cp1: {
+      x: point.cp1.x + movementX,
+      y: point.cp1.y + movementY
     }
   })
 
-  dragControl2 = ({ movementX, movementY } : any) => ({
-    point: {
-      ...this.state.point,
-      cp2: {
-        x: this.state.point.cp2.x + movementX,
-        y: this.state.point.cp2.y + movementY
-      }
+  dragControl2 = ({ movementX, movementY } : any, point: any) => ({
+    ...point,
+    cp2: {
+      x: point.cp2.x + movementX,
+      y: point.cp2.y + movementY
     }
   })
 
-  dragEnd = ({ movementX, movementY } : any) => ({
-    point: {
-      ...this.state.point,
-      end: {
-        x: this.state.point.end.x + movementX,
-        y: this.state.point.end.y + movementY
-      }
+  dragEnd = ({ movementX, movementY } : any, point: any) => ({
+    ...point,
+    end: {
+      x: point.end.x + movementX,
+      y: point.end.y + movementY
     }
   })
 
@@ -108,7 +115,8 @@ class PenCanvas extends React.Component<PenCanvasProps> {
     const { imagePath, scale, handleRadius = 4 } = this.props
     const width = (this.$image || {}).naturalWidth * scale || 0
     const height = (this.$image || {}).naturalHeight * scale || 0
-    const { start, cp1, cp2, end } = this.state.point
+    const { points, selectedPoint } = this.state
+    const { start, cp1, cp2, end } = points[selectedPoint]
 
     const handles = [
       {
@@ -159,6 +167,17 @@ class PenCanvas extends React.Component<PenCanvasProps> {
         onMouseDown={this.onMouseDown}
         onMouseMove={this.onMouseMove}
       />
+      {
+        points.map(({ start }, key) => <div
+          key={key}
+          className="cursor"
+          style={{
+            left: start.x,
+            top: start.y
+          }}
+          onMouseDown={() => this.setState({ selectedPoint: key })}
+        />)
+      }
       {
         handles.map(({ style, handler }, key) => <div
           key={key}
