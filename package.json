@@ -41,6 +41,7 @@
   "devDependencies": {
     "@storybook/addon-knobs": "^5.2.5",
     "@storybook/react": "^5.2.5",
-    "@types/storybook__react": "^4.0.2"
+    "@types/storybook__react": "^4.0.2",
+    "storybook-addon-xstate": "0.0.2"
   }
 }

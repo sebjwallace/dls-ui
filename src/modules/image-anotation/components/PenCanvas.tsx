@@ -1,7 +1,7 @@
 import React from 'react'
 import './PenCanvas.scss'
 
-import machine from './PenCanvas.machine'
+import createMachine from './PenCanvas.machine'
 
 type PenCanvasProps = {
   imagePath: string,
@@ -12,6 +12,7 @@ class PenCanvas extends React.Component<PenCanvasProps> {
 
   private $canvas: any
   private $image: any
+  private machine: any
 
   public state = {
     points: [
@@ -28,8 +29,12 @@ class PenCanvas extends React.Component<PenCanvasProps> {
         end: { x: 400,   y: 400 }
       }
     ],
-    selectedPoint: 1,
-    isMouseDown: false
+    selectedPoint: 1
+  }
+
+  constructor(props: PenCanvasProps){
+    super(props)
+    this.machine = createMachine(this)
   }
 
   static getDerivedStateFromProps(props: PenCanvasProps, state: any){
@@ -55,104 +60,6 @@ class PenCanvas extends React.Component<PenCanvasProps> {
     })
   }
 
-  addPoint = ({ nativeEvent: event }: { nativeEvent: MouseEvent }) => {
-    this.drag = this.dragNew
-    this.setState({
-      points: [
-        ...this.state.points,
-        {
-          start: {
-            x: event.offsetX,
-            y: event.offsetY
-          },
-          cp1: {
-            x: event.offsetX,
-            y: event.offsetY
-          },
-          cp2: {
-            x: event.offsetX,
-            y: event.offsetY
-          },
-          end: {
-            x: event.offsetX,
-            y: event.offsetY
-          }
-        }
-      ],
-      isMouseDown: true,
-      selectedPoint: this.state.points.length
-    })
-  }
-
-  onMouseMove = (event : any) => {
-    if(this.state.isMouseDown){
-      const point = this.state.points[this.state.selectedPoint]
-      this.state.points[this.state.selectedPoint] = this.drag(event, point)
-      this.setState({
-        points: this.state.points
-      })
-    }
-  }
-
-  onMouseUp = () => {
-    this.setState({ isMouseDown: false })
-  }
-
-  enableDrag = (dragMode: Function) => {
-    this.setState({ isMouseDown: true })
-    this.drag = dragMode
-  }
-
-  drag: any = () => {}
-
-  dragStart = ({ movementX, movementY } : any, point: any) => ({
-    ...point,
-    start: {
-      x: point.start.x + movementX,
-      y: point.start.y + movementY
-    }
-  })
-
-  dragControl1 = ({ movementX, movementY } : any, point: any) => ({
-    ...point,
-    cp1: {
-      x: point.cp1.x + movementX,
-      y: point.cp1.y + movementY
-    }
-  })
-
-  dragControl2 = ({ movementX, movementY } : any, point: any) => ({
-    ...point,
-    cp2: {
-      x: point.cp2.x + movementX,
-      y: point.cp2.y + movementY
-    }
-  })
-
-  dragEnd = ({ movementX, movementY } : any, point: any) => ({
-    ...point,
-    end: {
-      x: point.end.x + movementX,
-      y: point.end.y + movementY
-    }
-  })
-
-  dragNew = ({ movementX, movementY } : any, point: any) => ({
-    ...point,
-    // cp1: {
-    //   x: point.cp1.x + movementX * 0.6,
-    //   y: point.cp1.y + movementY * 0.6
-    // },
-    cp1: {
-      x: point.cp1.x + movementX,
-      y: point.cp1.y + movementY
-    },
-    end: {
-      x: point.end.x + movementX,
-      y: point.end.y + movementY
-    }
-  })
-
   render(){
 
     const { imagePath, scale, handleRadius = 4 } = this.props
@@ -167,28 +74,28 @@ class PenCanvas extends React.Component<PenCanvasProps> {
           top: start.y - handleRadius,
           left: start.x - handleRadius
         },
-        handler: this.dragStart
+        handler: 'start'
       },
       {
         style: {
           top: end.y - handleRadius,
           left: end.x - handleRadius
         },
-        handler: this.dragEnd
+        handler: 'end'
       },
       {
         style: {
           top: cp1.y - handleRadius,
           left: cp1.x - handleRadius
         },
-        handler: this.dragControl1
+        handler: 'cp1'
       },
       {
         style: {
           top: cp2.y - handleRadius,
           left: cp2.x - handleRadius
         },
-        handler: this.dragControl2
+        handler: 'cp2'
       }
     ]
 
@@ -206,9 +113,9 @@ class PenCanvas extends React.Component<PenCanvasProps> {
         className="canvas"
         width={width}
         height={height}
-        onMouseUp={machine.send}
-        onMouseDown={machine.send}
-        onMouseMove={machine.send}
+        onMouseUp={this.machine.send}
+        onMouseDown={this.machine.send}
+        onMouseMove={this.machine.send}
       />
       {
         points.map(({ start }, key) => <div
@@ -218,6 +125,7 @@ class PenCanvas extends React.Component<PenCanvasProps> {
             left: start.x,
             top: start.y
           }}
+          onMouseUp={this.machine.send}
           onMouseDown={() => this.setState({ selectedPoint: key })}
         />)
       }
@@ -226,9 +134,9 @@ class PenCanvas extends React.Component<PenCanvasProps> {
           key={key}
           className="cursor"
           style={style}
-          onMouseUp={this.onMouseUp}
-          onMouseDown={() => this.enableDrag(handler)}
-          onMouseMove={this.onMouseMove}
+          onMouseUp={this.machine.send}
+          onMouseDown={() => this.machine.send({ type: 'dragPoint', point: key, pointType: handler })}
+          onMouseMove={this.machine.send}
         />)
       }
     </div>
