@@ -1,6 +1,8 @@
 import React from 'react'
 import './PenCanvas.scss'
 
+import machine from './PenCanvas.machine'
+
 type PenCanvasProps = {
   imagePath: string,
   scale: number,
@@ -53,8 +55,33 @@ class PenCanvas extends React.Component<PenCanvasProps> {
     })
   }
 
-  onMouseDown = ({ nativeEvent: event }: { nativeEvent: MouseEvent }) => {
-    this.drag = this.dragStart
+  addPoint = ({ nativeEvent: event }: { nativeEvent: MouseEvent }) => {
+    this.drag = this.dragNew
+    this.setState({
+      points: [
+        ...this.state.points,
+        {
+          start: {
+            x: event.offsetX,
+            y: event.offsetY
+          },
+          cp1: {
+            x: event.offsetX,
+            y: event.offsetY
+          },
+          cp2: {
+            x: event.offsetX,
+            y: event.offsetY
+          },
+          end: {
+            x: event.offsetX,
+            y: event.offsetY
+          }
+        }
+      ],
+      isMouseDown: true,
+      selectedPoint: this.state.points.length
+    })
   }
 
   onMouseMove = (event : any) => {
@@ -104,6 +131,22 @@ class PenCanvas extends React.Component<PenCanvasProps> {
 
   dragEnd = ({ movementX, movementY } : any, point: any) => ({
     ...point,
+    end: {
+      x: point.end.x + movementX,
+      y: point.end.y + movementY
+    }
+  })
+
+  dragNew = ({ movementX, movementY } : any, point: any) => ({
+    ...point,
+    // cp1: {
+    //   x: point.cp1.x + movementX * 0.6,
+    //   y: point.cp1.y + movementY * 0.6
+    // },
+    cp1: {
+      x: point.cp1.x + movementX,
+      y: point.cp1.y + movementY
+    },
     end: {
       x: point.end.x + movementX,
       y: point.end.y + movementY
@@ -163,9 +206,9 @@ class PenCanvas extends React.Component<PenCanvasProps> {
         className="canvas"
         width={width}
         height={height}
-        onMouseUp={this.onMouseUp}
-        onMouseDown={this.onMouseDown}
-        onMouseMove={this.onMouseMove}
+        onMouseUp={machine.send}
+        onMouseDown={machine.send}
+        onMouseMove={machine.send}
       />
       {
         points.map(({ start }, key) => <div
