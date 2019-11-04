@@ -1,47 +1,18 @@
 import React from 'react'
 import './PenCanvas.scss'
 
-import createMachine from './PenCanvas.machine'
-
 type PenCanvasProps = {
   imagePath: string,
   scale: number,
-  handleRadius?: number
+  handleRadius?: number,
+  points: Array<any>,
+  selectedPoint: number,
+  send: any
 }
 class PenCanvas extends React.Component<PenCanvasProps> {
 
   private $canvas: any
   private $image: any
-  private machine: any
-
-  public state = {
-    points: [
-      {
-        start: { x: 50,    y: 20  },
-        cp1: { x: 230,   y: 30  },
-        cp2: { x: 150,   y: 80  },
-        end: { x: 250,   y: 100 }
-      },
-      {
-        start: { x: 250,   y: 100  },
-        cp1: { x: 270,   y: 150  },
-        cp2: { x: 380,   y: 340  },
-        end: { x: 400,   y: 400 }
-      }
-    ],
-    selectedPoint: 1
-  }
-
-  constructor(props: PenCanvasProps){
-    super(props)
-    this.machine = createMachine(this)
-  }
-
-  static getDerivedStateFromProps(props: PenCanvasProps, state: any){
-    return {
-      scale: props.scale
-    }
-  }
 
   componentDidUpdate(){
     this.renderCanvas()
@@ -51,7 +22,7 @@ class PenCanvas extends React.Component<PenCanvasProps> {
     const canvas: any = this.$canvas
     const ctx = canvas.getContext('2d')
     ctx.clearRect(0,0,canvas.width,canvas.height)
-    const { points } = this.state
+    const { points } = this.props
     points.forEach(({ start, cp1, cp2, end }) => {
       ctx.beginPath()
       ctx.moveTo(start.x, start.y)
@@ -62,10 +33,9 @@ class PenCanvas extends React.Component<PenCanvasProps> {
 
   render(){
 
-    const { imagePath, scale, handleRadius = 4 } = this.props
+    const { imagePath, scale, handleRadius = 4, send, points, selectedPoint } = this.props
     const width = (this.$image || {}).naturalWidth * scale || 0
     const height = (this.$image || {}).naturalHeight * scale || 0
-    const { points, selectedPoint } = this.state
     const { start, cp1, cp2, end } = points[selectedPoint]
 
     const handles = [
@@ -113,9 +83,9 @@ class PenCanvas extends React.Component<PenCanvasProps> {
         className="canvas"
         width={width}
         height={height}
-        onMouseUp={this.machine.send}
-        onMouseDown={this.machine.send}
-        onMouseMove={this.machine.send}
+        onMouseUp={send}
+        onMouseDown={send}
+        onMouseMove={send}
       />
       {
         points.map(({ start }, key) => <div
@@ -125,8 +95,7 @@ class PenCanvas extends React.Component<PenCanvasProps> {
             left: start.x,
             top: start.y
           }}
-          onMouseUp={this.machine.send}
-          onMouseDown={() => this.setState({ selectedPoint: key })}
+          onMouseMove={send}
         />)
       }
       {
@@ -134,9 +103,7 @@ class PenCanvas extends React.Component<PenCanvasProps> {
           key={key}
           className="cursor"
           style={style}
-          onMouseUp={this.machine.send}
-          onMouseDown={() => this.machine.send({ type: 'dragPoint', point: key, pointType: handler })}
-          onMouseMove={this.machine.send}
+          onMouseMove={send}
         />)
       }
     </div>
