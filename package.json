@@ -11,7 +11,7 @@
     "node-sass": "^4.13.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
-    "react-scripts": "3.2.0",
+    "react-scripts": "5.0.1",
     "typescript": "3.6.4",
     "xstate": "^4.6.7"
   },
@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@storybook/addon-knobs": "^5.2.5",
-    "@storybook/react": "^5.2.5",
+    "@storybook/react": "^7.0.9",
     "@types/storybook__react": "^4.0.2",
     "storybook-addon-xstate": "0.0.2"
   }
